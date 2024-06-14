@@ -1,0 +1,51 @@
+<style>
+    pre {
+  white-space: pre-wrap;       /* CSS3 */
+  white-space: -moz-pre-wrap;  /* Firefox */
+  white-space: -pre-wrap;      /* Opera <7 */
+  white-space: -o-pre-wrap;    /* Opera 7 */
+  word-wrap: break-word;       /* IE */
+}
+</style>
+<div class="container mt-5">
+    <div *ngIf="!deviceSelected" class="card">
+        <div class="card-body">
+            <h5 class="card-title">Chọn loại loại mặt hàng cần tư vấn</h5>
+            <div *ngIf="productTypes$ | async as productTypes" class="btn-group row w-100 gap-2" role="group"
+                aria-label="Device selection">
+                <button type="button" class="col btn btn-primary" *ngFor="let item of productTypes"
+                    (click)="selectDevice(item.id)">{{item.name}}</button>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="deviceSelected" class="card">
+        <div class="card-body">
+            <h5 class="card-title">Chat với bot ({{selectedDevice}})</h5>
+            <div class="chat-window"
+                style="height: 600px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
+                <div *ngIf="(messages$ | async) as messages">
+                    <div *ngFor="let msg of messages" [ngClass]="{'text-right': msg.sender === 'user'}">
+                        <div class="alert"
+                            [ngClass]="{'alert-primary': msg.sender === 'bot', 'alert-secondary': msg.sender === 'user'}"
+                            role="alert">
+                            <pre>{{ msg.text }}</pre>
+                        </div>
+                    </div>
+                    <div *ngIf="isLoading$ | async" class="alert bot" role="alert">
+                        <div class="spinner-border" role="status">
+                            <span class="sr-only"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="input-group mt-3">
+                <input type="text" class="form-control" placeholder="Nhập tin nhắn..." [(ngModel)]="message"
+                    (keyup.enter)="sendMessage()">
+                <div class="input-group-append">
+                    <button [disabled]="isLoading$ | async" class="btn btn-primary" type="button" (click)="sendMessage()">Gửi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
